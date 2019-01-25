@@ -18,8 +18,10 @@ spec:
     command:
     - cat
     tty: true
+    # We need to use the debug version of the image as only
+    # this variant contains a shell
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:v0.7.0
+    image: gcr.io/kaniko-project/executor:debug-v0.7.0
     imagePullPolicy: Always
     command:
     - /busybox/cat
