@@ -18,10 +18,40 @@ spec:
     command:
     - cat
     tty: true
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:v0.7.0
+    imagePullPolicy: Always
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: jenkins-docker-cfg
+        mountPath: /root
+  volumes:
+  - name: jenkins-docker-cfg
+    projected:
+      sources:
+      - secret:
+          name: regcred
+          items:
+            - key: .dockerconfigjson
+              path: .docker/config.json
 """
 }
   }
   stages {
+    stage('Build with Kaniko') {
+      environment {
+        PATH = "/busybox:/kaniko:$PATH"
+      }
+      steps {
+        container(name: 'kaniko', shell: '/busybox/sh') {
+            sh """#!/busybox/sh
+            /kaniko/executor -f Dockerfile -c . --destination=quay.io/fc/jorian-kaniko:${env.GIT_COMMIT}
+            """
+        }
+      }
+    }
     stage('Deploy') {
       steps {
         container('kubectl') {
