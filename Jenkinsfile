@@ -49,7 +49,7 @@ spec:
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
             sh """#!/busybox/sh
-            /kaniko/executor -f Dockerfile -c . --destination=quay.io/fc/jorian-kaniko:${env.GIT_COMMIT}
+            /kaniko/executor -f Dockerfile -c . --destination=docker-nexus.build-infra.forcarelabs.com/docker/jorian-kaniko:${env.GIT_COMMIT}
             """
         }
       }
